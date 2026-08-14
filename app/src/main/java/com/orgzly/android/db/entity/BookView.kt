@@ -1,7 +1,6 @@
 package com.orgzly.android.db.entity
 
 import androidx.room.Embedded
-import com.orgzly.android.repos.VersionedRook
 
 data class BookView(
         @Embedded

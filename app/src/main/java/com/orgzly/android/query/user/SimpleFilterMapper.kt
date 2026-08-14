@@ -18,9 +18,8 @@ import com.orgzly.android.query.SortOrder
 import com.orgzly.android.query.StateType
 import com.orgzly.android.query.getTodayDateConditionRelationshipForType
 import com.orgzly.android.query.relativeDateOptionRelations
-import javax.inject.Inject
 
-class SimpleFilterMapper @Inject constructor(
+class SimpleFilterMapper(
     private val queryParser: InternalQueryParser
 ) {
 

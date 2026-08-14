@@ -17,12 +17,10 @@ import com.orgzly.android.LocalStorage;
 import com.orgzly.BuildConfig;
 import com.orgzly.org.OrgStatesWorkflow;
 
-import org.eclipse.jgit.transport.URIish;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1007,13 +1005,7 @@ public class AppPreferences {
             return null;
         }
 
-        for (com.orgzly.android.ui.capture.CaptureTemplate template : captureTemplates(context)) {
-            if (id.equals(template.getId())) {
-                return id;
-            }
-        }
-
-        return null;
+        return id;
     }
 
     public static void widgetCaptureTemplateId(Context context, @Nullable String value) {
@@ -1090,17 +1082,6 @@ public class AppPreferences {
         File path = externalFilesDir != null ? externalFilesDir : context.getFilesDir();
         return getStringFromSelector(
                 context, R.string.pref_key_git_default_repository_directory, path.toString());
-    }
-
-    public static String repositoryStoragePathForUri(Context context, Uri repoUri)  {
-        String directoryFilename = repoUri.toString();
-        try {
-            directoryFilename = new URIish(directoryFilename).getPath();
-        } catch (URISyntaxException e) {
-            directoryFilename = directoryFilename.replaceAll("/[^A-Za-z0-9 ]/", "");
-        }
-        Uri baseUri = Uri.parse(defaultRepositoryStorageDirectory(context));
-        return baseUri.buildUpon().appendPath(directoryFilename).build().getPath();
     }
 
     private static String getStringFromSelector(Context context, int selector, String def) {
@@ -1423,22 +1404,4 @@ public class AppPreferences {
         return "id-" + id + "-";
     }
 
-    /* Capture templates - stored as JSON array */
-    public static List<com.orgzly.android.ui.capture.CaptureTemplate> captureTemplates(Context context) {
-        String json = getDefaultSharedPreferences(context).getString(context.getResources().getString(R.string.pref_key_capture_templates), "[]");
-        com.google.gson.reflect.TypeToken<List<com.orgzly.android.ui.capture.CaptureTemplate>> typeToken =
-            new com.google.gson.reflect.TypeToken<List<com.orgzly.android.ui.capture.CaptureTemplate>>(){};
-        try {
-            List<com.orgzly.android.ui.capture.CaptureTemplate> result = new Gson().fromJson(json, typeToken.getType());
-            return result != null ? result : new ArrayList<>();
-        } catch (Exception e) {
-            Log.e("AppPreferences", "Failed to parse capture templates JSON", e);
-            return new ArrayList<>();
-        }
-    }
-
-    public static void setCaptureTemplates(Context context, List<com.orgzly.android.ui.capture.CaptureTemplate> templates) {
-        String json = new Gson().toJson(templates);
-        getDefaultSharedPreferences(context).edit().putString(context.getResources().getString(R.string.pref_key_capture_templates), json).apply();
-    }
 }

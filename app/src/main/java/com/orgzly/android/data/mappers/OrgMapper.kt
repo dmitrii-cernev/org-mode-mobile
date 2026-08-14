@@ -4,7 +4,6 @@ import com.orgzly.android.db.entity.Note
 import com.orgzly.android.db.entity.NoteProperty
 import com.orgzly.android.db.entity.NoteView
 import com.orgzly.android.db.entity.toList
-import com.orgzly.android.ui.note.NotePayload
 import com.orgzly.org.OrgHead
 import com.orgzly.org.OrgProperties
 import com.orgzly.org.datetime.OrgRange
@@ -42,26 +41,6 @@ object OrgMapper {
             clock = noteView.clockRangeString?. let { OrgRange.parse(it) }
 
             content = note.content
-        }
-    }
-
-    fun toOrgHead(notePayload: NotePayload): OrgHead {
-        return OrgHead().apply {
-            title = notePayload.title
-
-            setTags(notePayload.tags.toTypedArray())
-
-            state = notePayload.state
-
-            priority = notePayload.priority
-
-            scheduled = notePayload.scheduled?.let { OrgRange.parse(it) }
-            deadline = notePayload.deadline?.let { OrgRange.parse(it) }
-            closed = notePayload.closed?.let { OrgRange.parse(it) }
-
-            properties = notePayload.properties
-
-            content = notePayload.content
         }
     }
 }

@@ -5,9 +5,6 @@ import android.net.Uri;
 import androidx.documentfile.provider.DocumentFile;
 
 import com.orgzly.BuildConfig;
-import com.orgzly.android.db.entity.BookView;
-import com.orgzly.android.repos.Rook;
-import com.orgzly.android.repos.VersionedRook;
 import com.orgzly.android.util.LogUtils;
 
 import java.util.regex.Matcher;
@@ -31,16 +28,6 @@ public class BookName {
         mRepoRelativePath = repoRelativePath;
         mName = name;
         mFormat = format;
-    }
-
-    public static String getRepoRelativePath(BookView bookView) {
-        if (bookView.getSyncedTo() != null) {
-            VersionedRook vrook = bookView.getSyncedTo();
-            return getRepoRelativePath(vrook.getRepoUri(), vrook.getUri());
-        } else {
-            // There is no remote book; we can only guess the repo path from the book's name.
-            return repoRelativePath(bookView.getBook().getName(), BookFormat.ORG);
-        }
     }
 
     /**
@@ -82,10 +69,6 @@ public class BookName {
                     fileUri.toString().replace(repoUri.toString(), "")
             ).replaceFirst("^/", "");
         }
-    }
-
-    public static BookName fromRook(Rook rook) {
-        return fromRepoRelativePath(getRepoRelativePath(rook.getRepoUri(), rook.getUri()));
     }
 
     public static boolean isSupportedFormatFileName(String path) {
