@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:name=".android.App"
+        android:name="com.orgzly.android.App"
         android:allowBackup="false"
         android:label="Orgzly Workspace"
         android:supportsRtl="true"
         android:theme="@style/Theme.OrgWorkspace">
         <activity
-            android:name=".android.workspace.WorkspaceActivity"
+            android:name="com.orgzly.android.workspace.WorkspaceActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
