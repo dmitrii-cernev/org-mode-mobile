@@ -129,6 +129,11 @@ dependencies {
     implementation "com.googlecode.juniversalchardet:juniversalchardet:$versions.juniversalchardet"
 
     implementation "joda-time:joda-time:$versions.joda_time"
+
+    implementation "androidx.appcompat:appcompat:$versions.android_appcompat"
+    implementation "androidx.drawerlayout:drawerlayout:1.2.0"
+    implementation "com.google.android.material:material:$versions.android_material"
+    testImplementation "junit:junit:$versions.junit"
 }
 
 repositories {
@@ -149,21 +154,14 @@ def orgJavaLocation() {
     }
 }
 
-// https://gist.github.com/JonasGroeger/7620911
+// Resolve git metadata for both normal clones and linked worktrees.
 def getCheckedOutGitCommitHash() {
-    def gitFolder = "$projectDir/../.git/"
-    def takeFromHash = 12
-    /*
-     * '.git/HEAD' contains either
-     *      in case of detached head: the currently checked out commit hash
-     *      otherwise: a reference to a file containing the current commit hash
-     */
-    def head = new File(gitFolder + "HEAD").text.split(":") // .git/HEAD
-    def isCommit = head.length == 1 // e5a7c79edabbf7dd39888442df081b1c9d8e88fd
-    // def isRef = head.length > 1     // ref: refs/heads/master
-
-    if(isCommit) return head[0].trim().take(takeFromHash) // e5a7c79edabb
-
-    def refHead = new File(gitFolder + head[1].trim()) // .git/refs/heads/master
-    refHead.text.trim().take takeFromHash
+    def gitPointer = new File(rootProject.projectDir, '.git')
+    def gitDir = gitPointer.isDirectory() ? gitPointer : new File(gitPointer.text.trim().replace('gitdir: ', ''))
+    if (!gitDir.isAbsolute()) gitDir = new File(gitPointer.parentFile, gitDir.path)
+    def head = new File(gitDir, 'HEAD').text.trim()
+    if (!head.startsWith('ref:')) return head.take(12)
+    def ref = head.substring(5).trim()
+    def refFile = new File(gitDir, ref)
+    return refFile.exists() ? refFile.text.trim().take(12) : 'unknown'
 }
