@@ -1,13 +1,11 @@
 package com.orgzly.android
 
-import android.util.Log
 import com.orgzly.R
-import com.orgzly.android.data.DataRepository
 import com.orgzly.android.data.mappers.OrgMapper
 import com.orgzly.android.db.entity.Book
+import com.orgzly.android.db.entity.NoteProperty
 import com.orgzly.android.db.entity.NoteView
 import com.orgzly.android.prefs.AppPreferences
-import com.orgzly.android.ui.note.NotePayload
 import com.orgzly.org.parser.OrgParserSettings
 import com.orgzly.org.parser.OrgParserWriter
 import java.io.File
@@ -16,65 +14,43 @@ import java.io.PrintWriter
 import java.io.Writer
 import java.nio.charset.Charset
 
-class NotesOrgExporter(val dataRepository: DataRepository) {
-
+class NotesOrgExporter {
     /**
-     * Writes content of the book from database to a specified file.
+     * Writes content of the book to a specified file.
      */
     @Throws(IOException::class)
-    fun exportBook(book: Book, file: File) {
+    fun exportBook(book: Book, notes: Collection<NoteView>, file: File) {
         val encoding = book.usedEncoding ?: Charset.defaultCharset().name()
 
         PrintWriter(file, encoding).use {
-            exportBook(book, it)
+            exportBook(book, notes, it)
         }
     }
 
     @Throws(IOException::class)
-    fun exportBook(book: Book, writer: Writer) {
-        val orgParserSettings = getOrgParserSettingsFromPreferences()
-        val orgWriter = OrgParserWriter(orgParserSettings)
+    fun exportBook(book: Book, notes: Collection<NoteView>, writer: Writer) {
+        val orgWriter = OrgParserWriter(getOrgParserSettingsFromPreferences())
 
-        // Write preface
         writer.write(orgWriter.whiteSpacedFilePreface(book.preface))
 
-        // Write each note using exportNote
-        dataRepository.getNotes(book.name).forEach { noteView ->
-            writer.write(exportNote(noteView, book.isIndented == true))
+        notes.forEach { noteView ->
+            writer.write(exportNote(noteView, emptyList(), book.isIndented == true))
         }
-    }
-
-    /**
-     * Exports a single note to Org format string.
-     */
-    fun exportNote(noteId: Long): String {
-        val noteView = dataRepository.getNoteView(noteId)
-            ?: throw IllegalArgumentException("Note with id $noteId not found")
-
-        return exportNote(noteView, false)
-    }
-
-    /**
-     * Exports a [NotePayload] (in-memory, possibly unsaved note) to Org format string.
-     */
-    fun exportNote(notePayload: NotePayload): String {
-        val orgParserSettings = getOrgParserSettingsFromPreferences()
-        val orgWriter = OrgParserWriter(orgParserSettings)
-        val head = OrgMapper.toOrgHead(notePayload)
-        return orgWriter.whiteSpacedHead(head, 1, false)
     }
 
     /**
      * Exports a single note from NoteView to Org format string.
      */
-    private fun exportNote(noteView: NoteView, isIndented: Boolean): String {
-        val orgParserSettings = getOrgParserSettingsFromPreferences()
-        val orgWriter = OrgParserWriter(orgParserSettings)
-
+    fun exportNote(
+        noteView: NoteView,
+        properties: Collection<NoteProperty> = emptyList(),
+        isIndented: Boolean = false
+    ): String {
+        val orgWriter = OrgParserWriter(getOrgParserSettingsFromPreferences())
         val note = noteView.note
 
         val head = OrgMapper.toOrgHead(noteView).apply {
-            properties = OrgMapper.toOrgProperties(dataRepository.getNoteProperties(note.id))
+            this.properties = OrgMapper.toOrgProperties(properties)
         }
 
         return orgWriter.whiteSpacedHead(head, note.position.level, isIndented)
@@ -83,8 +59,6 @@ class NotesOrgExporter(val dataRepository: DataRepository) {
     companion object {
         private fun getOrgParserSettingsFromPreferences(): OrgParserSettings {
             val parserSettings = OrgParserSettings.getBasic()
-
-            // FIXME: Inject AppPreferences instead
             val context = App.getAppContext()
 
             when (AppPreferences.separateNotesWithNewLine(context)) {
@@ -99,12 +73,10 @@ class NotesOrgExporter(val dataRepository: DataRepository) {
             }
 
             parserSettings.separateHeaderAndContentWithNewLine =
-                    AppPreferences.separateHeaderAndContentWithNewLine(context)
+                AppPreferences.separateHeaderAndContentWithNewLine(context)
 
             parserSettings.tagsColumn = AppPreferences.tagsColumn(context)
-
             parserSettings.orgIndentMode = AppPreferences.orgIndentMode(context)
-
             parserSettings.orgIndentIndentationPerLevel = AppPreferences.orgIndentIndentationPerLevel(context)
 
             return parserSettings

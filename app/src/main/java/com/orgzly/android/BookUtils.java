@@ -9,7 +9,6 @@ import android.text.style.ForegroundColorSpan;
 import com.orgzly.R;
 import com.orgzly.android.db.entity.Book;
 import com.orgzly.android.db.entity.BookAction;
-import com.orgzly.android.ui.util.ExtensionsKt;
 
 public class BookUtils {
     public static final String TAG = BookUtils.class.getName();
@@ -66,8 +65,9 @@ public class BookUtils {
             SpannableStringBuilder builder = new SpannableStringBuilder(action.getMessage());
 
             /* Get error color attribute. */
-            int color = ExtensionsKt.styledAttributes(
-                    context, new int[] { R.attr.colorError }, arr -> arr.getColor(0, 0));
+            TypedArray arr = context.obtainStyledAttributes(new int[] { R.attr.colorError });
+            int color = arr.getColor(0, 0);
+            arr.recycle();
 
             /* Set error color. */
             builder.setSpan(new ForegroundColorSpan(color), 0, builder.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);

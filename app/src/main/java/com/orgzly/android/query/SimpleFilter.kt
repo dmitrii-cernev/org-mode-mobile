@@ -1,6 +1,5 @@
 package com.orgzly.android.query
 
-import androidx.compose.runtime.Immutable
 import kotlin.reflect.KClass
 
 data class SimpleQuery(
@@ -8,7 +7,6 @@ data class SimpleQuery(
     val filter: SimpleFilter,
 )
 
-@Immutable
 data class SimpleFilter(
     val books: Set<String> = emptySet(),
 

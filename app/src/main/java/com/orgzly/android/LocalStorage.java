@@ -3,13 +3,13 @@ package com.orgzly.android;
 import android.content.Context;
 import android.os.Build;
 import android.os.Environment;
+import android.os.storage.StorageManager;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
 import com.orgzly.BuildConfig;
 import com.orgzly.R;
-import com.orgzly.android.ui.util.SystemServices;
 import com.orgzly.android.util.LogUtils;
 
 import java.io.File;
@@ -176,6 +176,6 @@ public class LocalStorage {
      */
     @RequiresApi(api = Build.VERSION_CODES.R)
     private static File getExternalStoragePath(Context context) {
-        return SystemServices.getStorageManager(context).getStorageVolumes().get(0).getDirectory();
+        return context.getSystemService(StorageManager.class).getStorageVolumes().get(0).getDirectory();
     }
 }

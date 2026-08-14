@@ -1,0 +1,4 @@
+<resources>
+    <item name="mode_compiled" type="id" />
+    <item name="mode_plain" type="id" />
+</resources>

@@ -182,15 +182,15 @@ object PreRoomMigration {
     private fun noteFromCursor(cursor: Cursor): NotePosition {
         val position = NotePosition()
 
-        position.id = cursor.getLong(cursor.getColumnIndex("_id"))
-        position.bookId = cursor.getLong(cursor.getColumnIndex("book_id"))
-        position.level = cursor.getInt(cursor.getColumnIndex("level"))
-        position.lft = cursor.getLong(cursor.getColumnIndex("is_visible"))
-        position.rgt = cursor.getLong(cursor.getColumnIndex("parent_position"))
-        position.descendantsCount = cursor.getInt(cursor.getColumnIndex("has_children"))
-        position.foldedUnderId = cursor.getLong(cursor.getColumnIndex("is_under_collapsed"))
-        position.parentId = cursor.getLong(cursor.getColumnIndex("parent_id"))
-        position.isFolded = cursor.getInt(cursor.getColumnIndex("is_collapsed")) != 0
+        position.id = cursor.getLong(cursor.getColumnIndexOrThrow("_id"))
+        position.bookId = cursor.getLong(cursor.getColumnIndexOrThrow("book_id"))
+        position.level = cursor.getInt(cursor.getColumnIndexOrThrow("level"))
+        position.lft = cursor.getLong(cursor.getColumnIndexOrThrow("is_visible"))
+        position.rgt = cursor.getLong(cursor.getColumnIndexOrThrow("parent_position"))
+        position.descendantsCount = cursor.getInt(cursor.getColumnIndexOrThrow("has_children"))
+        position.foldedUnderId = cursor.getLong(cursor.getColumnIndexOrThrow("is_under_collapsed"))
+        position.parentId = cursor.getLong(cursor.getColumnIndexOrThrow("parent_id"))
+        position.isFolded = cursor.getInt(cursor.getColumnIndexOrThrow("is_collapsed")) != 0
 
         return position
     }

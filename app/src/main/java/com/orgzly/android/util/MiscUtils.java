@@ -3,15 +3,11 @@ package com.orgzly.android.util;
 
 import android.content.ContentResolver;
 import android.net.Uri;
-import android.text.Editable;
 import android.text.Spanned;
-import android.text.TextWatcher;
-import android.widget.TextView;
 
 import androidx.core.text.HtmlCompat;
 import androidx.documentfile.provider.DocumentFile;
 
-import com.google.android.material.textfield.TextInputLayout;
 import com.orgzly.android.App;
 
 import java.io.BufferedReader;
@@ -218,26 +214,6 @@ public class MiscUtils {
         }
         in.close();
         out.close();
-    }
-
-    /**
-     * Clear {@link TextInputLayout} error after its text has been modified.
-     */
-    public static void clearErrorOnTextChange(final TextView tv, final TextInputLayout til) {
-        tv.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                til.setError(null);
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
     }
 
     private static boolean isAllowedInUrlEncoded(char c, String allow) {
